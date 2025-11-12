@@ -2,11 +2,10 @@
   description = "Neovim with lazy.nvim, Bamboo, C# and Java support as a Nix flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
-    neovim-nightly.url = "github:neovim/neovim";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, neovim-nightly }:
+  outputs = { self, nixpkgs }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -39,7 +38,6 @@
           -- C# LSP requires omnisharp executable installed by nixpkgs package below
           {
             'OmniSharp/omnisharp-roslyn',
-            -- no direct plugin config needed, LSP config below
           },
 
           -- Autoformatter conform.nvim
@@ -82,7 +80,6 @@
     in
     {
       packages.${system} = pkgs.neovim.overrideAttrs (old: {
-        # Add lazy.nvim and language servers to the runtime dependencies so no manual install
         buildInputs = old.buildInputs ++ [
           pkgs.nodejs
           pkgs.git
@@ -93,22 +90,16 @@
           pkgs.luajit
         ];
 
-        # Include our custom init.lua config
+        # Use custom init.lua
         dontPatchELF = true;
         installPhase = ''
           mkdir -p $out/share/nvim
           cp ${neovim-config} $out/share/nvim/init.lua
+          # lazy.nvim installed as runtime dependency from nixpkgs
           cp -r ${pkgs.lazy-nvim}/share/nvim/site/* $out/share/nvim/site/
         '';
       });
 
       defaultPackage = self.packages.${system};
-
-      # A shell environment with neovim available, for ease of use
-      #devShells.${system} = pkgs.mkShell {
-      #  buildInputs = [
-      #    self.packages.${system}
-      #  ];
-      #};
     };
 }
