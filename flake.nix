@@ -67,7 +67,7 @@
                   theme = 'bamboo',
                   globalstatus = true,
                   section_separators = '',
-                  component_separators = '',
+                  component_separators = ''
                 },
               })
             end,
