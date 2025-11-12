@@ -64,10 +64,10 @@
             config = function()
               require('lualine').setup({
                 options = {
-                  theme = 'bamboo',
-                  globalstatus = true,
-                  section_separators = '',
-                  component_separators = ''
+                  theme = 'bamboo';
+                  globalstatus = true;
+                  section_separators = '';
+                  component_separators = '';
                 },
               })
             end,
